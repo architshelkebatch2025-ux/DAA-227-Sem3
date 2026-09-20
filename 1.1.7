@@ -1,0 +1,85 @@
+#include <stdio.h>
+#define MAX 1005
+#define INF 99999999
+
+struct Edge {
+    int u, v, w;
+};
+
+struct Edge edges[MAX];
+
+int dist[MAX], parent[MAX];
+
+int main() {
+    int V, E, i, j, src;
+
+    scanf("%d", &V);
+    scanf("%d", &E);
+
+    for(i = 0; i < E; i++) {
+        scanf("%d %d %d", &edges[i].u, &edges[i].v, &edges[i].w);
+    }
+
+    scanf("%d", &src);
+
+    for(i = 1; i <= V; i++) {
+        dist[i] = INF;
+        parent[i] = -1;
+    }
+
+    dist[src] = 0;
+    /* Bellman-Ford relaxation */
+    for(i = 1; i <= V - 1; i++) {
+        for(j = 0; j < E; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int w = edges[j].w;
+
+            if(dist[u] != INF && dist[u] + w < dist[v]) {
+                dist[v] = dist[u] + w;
+                parent[v] = u;
+            }
+        }
+    }
+
+    /* Check for negative cycle */
+    for(j = 0; j < E; j++) {
+        int u = edges[j].u;
+        int v = edges[j].v;
+        int w = edges[j].w;
+
+        if(dist[u] != INF && dist[u] + w < dist[v]) {
+            printf("Negative cycle detected");
+            return 0;
+        }
+    }
+
+    /* Print result */
+    for(i = 1; i <= V; i++) {
+        if(i == src)
+            continue;
+        if(dist[i] == INF) {
+            printf("%d INF None\n", i);
+        } else {
+            printf("%d %d ", i, dist[i]);
+
+            int path[MAX], k = 0;
+            int cur = i;
+
+            while(cur != -1) {
+                path[k++] = cur;
+                cur = parent[cur];
+            }
+
+            for(j = k - 1; j >= 0; j--) {
+                printf("%d", path[j]);
+                if(j)
+                    printf("->");
+            }
+            printf("\n");
+        }
+    }
+
+    return 0;
+}
+
