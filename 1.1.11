@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int N, W;
+
+    scanf("%d", &N);
+
+    int *value = (int *)malloc(N * sizeof(int));
+    int *weight = (int *)malloc(N * sizeof(int));
+
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &value[i]);
+    }
+
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &weight[i]);
+    }
+
+    scanf("%d", &W);
+
+    // dp[w] = maximum value for capacity w
+    int *dp = (int *)calloc(W + 1, sizeof(int));
+
+    for (int i = 0; i < N; i++) {
+        // Traverse backwards so each item is selected at most once
+        for (int w = W; w >= weight[i]; w--) {
+            int newValue = dp[w - weight[i]] + value[i];
+
+            if (newValue > dp[w]) {
+                dp[w] = newValue;
+            }
+        }
+    }
+
+    printf("%d\n", dp[W]);
+
+    free(value);
+    free(weight);
+    free(dp);
+
+    return 0;
+}
+
